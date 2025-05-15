@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Membership Generator</title>
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@2/dist/email.min.js"></script>
+  <style>
+    body {
+      background-color: #000;
+      font-family: Arial, sans-serif;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .form-container {
+      background: #111;
+      padding: 2rem;
+      border-radius: 15px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
+    }
+
+    h2 {
+      text-align: center;
+      color: red;
+      margin-bottom: 1rem;
+    }
+
+    input[type="text"],
+    input[type="email"] {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 8px;
+      background: #222;
+      color: white;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 1rem;
+      background: red;
+      border: none;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: darkred;
+    }
+
+    .message {
+      margin-top: 1rem;
+      text-align: center;
+      color: green;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="form-container">
+    <h2>Get Membership Code</h2>
+    <form id="membershipForm">
+      <input type="text" id="to_name" name="to_name" placeholder="Enter your name" required />
+      <input type="email" id="to_email" name="to_email" placeholder="Enter your email" required />
+      <input type="text" id="membership_code" name="membership_code" readonly />
+      <button type="submit">Generate & Send Code</button>
+    </form>
+    <div class="message" id="messageBox"></div>
+  </div>
+
+  <script>
+    (function() {
+      emailjs.init("0LkP3Ej8M4HWa8P-l"); // Replace with your actual EmailJS public key
+    })();
+
+    function generateCode(length = 8) {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let code = '';
+      for (let i = 0; i < length; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return code;
+    }
+
+    document.getElementById("membershipForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const name = document.getElementById("to_name").value;
+      const email = document.getElementById("to_email").value;
+      const code = generateCode();
+      document.getElementById("membership_code").value = code;
+
+      emailjs.send("service_00ekrql", "template_r2s9u85", {
+        to_name: name,
+        to_email: email,
+        membership_code: code
+      }).then(function(response) {
+        document.getElementById("messageBox").textContent = "Membership code sent to " + email + "!";
+      }, function(error) {
+        document.getElementById("messageBox").textContent = "Failed to send email. Try again.";
+        console.error(error);
+      });
+    });
+  </script>
+
+</body>
+</html>
